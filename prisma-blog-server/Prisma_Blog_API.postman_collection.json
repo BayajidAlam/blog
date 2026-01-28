@@ -1,0 +1,528 @@
+{
+  "info": {
+    "_postman_id": "prisma-blog-api-collection",
+    "name": "Prisma Blog API",
+    "description": "Complete API collection for Prisma Blog Server with automated authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://prisma-blog-server.vercel.app",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('accessToken', response.token);",
+                  "        console.log('Token saved:', response.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-up/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-up", "email"]
+            },
+            "description": "Register a new user account"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const cookies = pm.cookies.all();",
+                  "    const sessionCookie = cookies.find(c => c.name.includes('session') || c.name.includes('auth'));",
+                  "    ",
+                  "    if (sessionCookie) {",
+                  "        pm.collectionVariables.set('accessToken', sessionCookie.value);",
+                  "        console.log('Session token saved from cookie');",
+                  "    }",
+                  "    ",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('accessToken', response.token);",
+                  "        console.log('Token saved from response');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-in/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-in", "email"]
+            },
+            "description": "Login user and automatically save authentication token"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Session",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/get-session",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "get-session"]
+            },
+            "description": "Get current user session"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-email?token=YOUR_TOKEN_HERE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-email"],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "YOUR_TOKEN_HERE"
+                }
+              ]
+            },
+            "description": "Verify email with token from email"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/sign-out",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "sign-out"]
+            },
+            "description": "Logout user"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Get All Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?page=1&limit=10&sortBy=createdAt&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "createdAt"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "tags",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Comma-separated tags"
+                },
+                {
+                  "key": "isFeatured",
+                  "value": "",
+                  "disabled": true,
+                  "description": "true or false"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "disabled": true,
+                  "description": "PUBLISHED, DRAFT, ARCHIVED"
+                },
+                {
+                  "key": "authorId",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all posts with pagination and filters"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/:postId",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", ":postId"],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "YOUR_POST_ID"
+                }
+              ]
+            },
+            "description": "Get a single post by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My First Blog Post\",\n  \"content\": \"This is the content of my blog post. It can be very long and detailed.\",\n  \"excerpt\": \"A brief summary of the post\",\n  \"tags\": [\"technology\", \"programming\", \"nodejs\"],\n  \"status\": \"PUBLISHED\",\n  \"isFeatured\": false,\n  \"coverImage\": \"https://example.com/image.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"]
+            },
+            "description": "Create a new post (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Blog Post Title\",\n  \"content\": \"Updated content\",\n  \"status\": \"PUBLISHED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts/:postId",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", ":postId"],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "YOUR_POST_ID"
+                }
+              ]
+            },
+            "description": "Update a post (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/:postId",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", ":postId"],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "YOUR_POST_ID"
+                }
+              ]
+            },
+            "description": "Delete a post (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/my-posts?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "my-posts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get posts created by authenticated user"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post Stats (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "stats"]
+            },
+            "description": "Get post statistics (requires admin role)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Create Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"This is a comment on the post\",\n  \"postId\": \"YOUR_POST_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"]
+            },
+            "description": "Create a comment on a post (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Reply Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"This is a reply to a comment\",\n  \"postId\": \"YOUR_POST_ID\",\n  \"parentId\": \"PARENT_COMMENT_ID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments"]
+            },
+            "description": "Reply to an existing comment (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comment by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/:commentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", ":commentId"],
+              "variable": [
+                {
+                  "key": "commentId",
+                  "value": "YOUR_COMMENT_ID"
+                }
+              ]
+            },
+            "description": "Get a single comment by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Comments by Author",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/author/:authorId",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "author", ":authorId"],
+              "variable": [
+                {
+                  "key": "authorId",
+                  "value": "YOUR_AUTHOR_ID"
+                }
+              ]
+            },
+            "description": "Get all comments by a specific author"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Updated comment content\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments/:commentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", ":commentId"],
+              "variable": [
+                {
+                  "key": "commentId",
+                  "value": "YOUR_COMMENT_ID"
+                }
+              ]
+            },
+            "description": "Update a comment (requires authentication)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/:commentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", ":commentId"],
+              "variable": [
+                {
+                  "key": "commentId",
+                  "value": "YOUR_COMMENT_ID"
+                }
+              ]
+            },
+            "description": "Delete a comment (requires authentication)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"],
+          "path": [""]
+        },
+        "description": "Root endpoint health check"
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ]
+}
