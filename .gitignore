@@ -46,3 +46,4 @@ node_modules
 /generated/prisma
 .DS_Store
 .vercel
+prisma-blog-server/.env.production
